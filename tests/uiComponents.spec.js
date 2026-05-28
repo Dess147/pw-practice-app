@@ -191,3 +191,9 @@ test('slider', async ({page}) => {
     await page.mouse.up() // release the mouse button to drop the slider at the new position
     await expect(tempBox).toContainText('30') // assert that the slider value is "30" after dragging (you can adjust the expected value based on the slider's scale and the position you dragged it to)
 })
+
+test.only('testing with argos ci', async ({page}) => {
+    await page.getByText('Modal & Overlays').click()
+    await page.getByText('Tooltip').click()
+
+    })

@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import { argosScreenshot } from '@argos-ci/playwright';
 
 test.beforeEach(async ({page}) => {
     await page.goto('/') // base url from paywright.config.ts file, so we can use relative url in the tests
@@ -192,8 +193,11 @@ test('slider', async ({page}) => {
     await expect(tempBox).toContainText('30') // assert that the slider value is "30" after dragging (you can adjust the expected value based on the slider's scale and the position you dragged it to)
 })
 
-test.only('testing with argos ci', async ({page}) => {
+test('testing with argos ci @argos', async ({page}) => {
     await page.getByText('Modal & Overlays').click()
+    await argosScreenshot(page, 'modal-overlays') // take a screenshot of the page and save it with the name "modal-overlays" in the Argos CI dashboard
     await page.getByText('Tooltip').click()
+    await argosScreenshot(page, 'tooltip') // take a screenshot of the page and save it with the name "tooltip" in the Argos CI dashboard
+
 
     })

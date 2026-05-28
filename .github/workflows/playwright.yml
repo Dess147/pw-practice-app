@@ -12,13 +12,17 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: lts/* 
+        node-version: lts/*
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
+    - name: Run UI component tests (Chromium)
       run: npm run uiComponents-chrome
+    - name: Run Argos UI snapshot test (Chromium)
+      env:
+        ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+      run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep "@argos"
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

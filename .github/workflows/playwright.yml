@@ -36,11 +36,11 @@ jobs:
           echo "ARGOS_TOKEN is missing - Argos upload will be skipped"
         fi
     - name: Run Argos UI snapshot test (Chromium)
-      if: ${{ github.event_name == 'push' && secrets.ARGOS_TOKEN != '' }}
+      if: ${{ github.event_name == 'push' && env.ARGOS_TOKEN != '' }}
       timeout-minutes: 20
       run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep "@argos"
     - name: Argos upload skipped
-      if: ${{ github.event_name != 'push' || secrets.ARGOS_TOKEN == '' }}
+      if: ${{ github.event_name != 'push' || env.ARGOS_TOKEN == '' }}
       run: |
         echo "Skipping Argos upload."
         echo "Reason: upload runs only on push events with ARGOS_TOKEN set in repository secrets."

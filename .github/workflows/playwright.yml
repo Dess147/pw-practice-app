@@ -10,26 +10,19 @@ jobs:
   test:
     timeout-minutes: 90
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Cache Playwright browsers
-      id: playwright-cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-playwright-
     - name: Install dependencies
       timeout-minutes: 10
       run: npm ci
-    - name: Install Playwright Chromium
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
-      timeout-minutes: 10
-      run: npx playwright install chromium
+    - name: Verify Chrome availability
+      timeout-minutes: 2
+      run: google-chrome --version
     - name: Run UI component tests (Chromium)
       timeout-minutes: 30
       run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep-invert "@argos"

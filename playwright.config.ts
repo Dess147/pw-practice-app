@@ -55,6 +55,9 @@ export default defineConfig<TestOptions>({
     },
     {
       name: 'chromium',
+      use: {
+        channel: process.env.CI ? 'chrome' : undefined,
+      },
     },
 
     {

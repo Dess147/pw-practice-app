@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -26,11 +27,23 @@ jobs:
     - name: Run UI component tests (Chromium)
       timeout-minutes: 30
       run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep-invert "@argos"
+    - name: Argos readiness check
+      timeout-minutes: 2
+      run: |
+        if [ -n "$ARGOS_TOKEN" ]; then
+          echo "ARGOS_TOKEN is configured"
+        else
+          echo "ARGOS_TOKEN is missing - Argos upload will be skipped"
+        fi
     - name: Run Argos UI snapshot test (Chromium)
+      if: ${{ github.event_name == 'push' && secrets.ARGOS_TOKEN != '' }}
       timeout-minutes: 20
-      env:
-        ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
       run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep "@argos"
+    - name: Argos upload skipped
+      if: ${{ github.event_name != 'push' || secrets.ARGOS_TOKEN == '' }}
+      run: |
+        echo "Skipping Argos upload."
+        echo "Reason: upload runs only on push events with ARGOS_TOKEN set in repository secrets."
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

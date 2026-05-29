@@ -1,4 +1,6 @@
 name: Playwright Tests
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   push:
     branches: [ main, master ]
@@ -6,7 +8,7 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,13 +22,17 @@ jobs:
         path: ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
     - name: Install dependencies
+      timeout-minutes: 10
       run: npm ci
     - name: Install Playwright Chromium
       if: steps.playwright-cache.outputs.cache-hit != 'true'
+      timeout-minutes: 10
       run: npx playwright install chromium
     - name: Run UI component tests (Chromium)
-      run: npm run uiComponents-chrome
+      timeout-minutes: 30
+      run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep-invert "@argos"
     - name: Run Argos UI snapshot test (Chromium)
+      timeout-minutes: 20
       env:
         ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
       run: npx playwright test --project=chromium tests/uiComponents.spec.js --grep "@argos"

@@ -6,13 +6,14 @@ dotenv.config();
 
 export default defineConfig<TestOptions>({
   timeout: 40000,
-  //globalTimeout: 60000,
+  globalTimeout: process.env.CI ? 45 * 60 * 1000 : undefined,
 
   expect: {
     timeout: 2000,
   },
 
-  retries: 1,
+  retries: process.env.CI ? 0 : 1,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [
     process.env.CI ? ["dot"] : ["list"],
     [
@@ -81,5 +82,7 @@ export default defineConfig<TestOptions>({
   webServer: {
     command: 'npm run start',
     url: 'http://localhost:4200/',
+    reuseExistingServer: !process.env.CI,
+    timeout: 180000,
   },
 });

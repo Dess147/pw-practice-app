@@ -21,6 +21,8 @@ jobs:
       with:
         path: ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
     - name: Install dependencies
       timeout-minutes: 10
       run: npm ci
